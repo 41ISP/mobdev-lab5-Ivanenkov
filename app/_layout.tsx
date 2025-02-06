@@ -6,6 +6,7 @@ import 'react-native-reanimated';
 //import TextInput from '@/components/input/Input';
 import { Alert, Button, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { customAlphabet } from 'nanoid';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -16,22 +17,26 @@ export default function RootLayout() {
   const handleclick = () => {
     // if(task.length > 0 && task.length <15)
     // {
-
+    
     //   Alert.alert(task)
     // }
     // else {
-    //   Alert.alert("Введите допустимое значение")
-    // }
-
-  }
-
-  const contact = [
-    {
-      id: '1',
-      name: 'kavo'
-    },
-
-  ]
+      //   Alert.alert("Введите допустимое значение")
+      // }
+      setTasks([...tasks,{id: nanoid(), task: task, state: false }])
+    }
+    
+    const nanoid = customAlphabet("adcdefghijklmnopqrstuvwxyz0123456789",10)
+    
+    const contact = [
+      {
+        task: "123",
+        id: nanoid(),
+        state: false
+      },
+      
+    ]
+  const [tasks, setTasks] = useState([...contact])
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -53,15 +58,15 @@ export default function RootLayout() {
 
         <View style={styles.container2}>
           <View style={styles.container}>
-          <TextInput onChangeText={setTask} placeholder='Напишите текст' style={styles.styleinput}>{task}</TextInput>
+          <TextInput value={task} onChangeText={setTask} placeholder='Напишите текст' style={styles.styleinput}>{task}</TextInput>
           <TouchableOpacity onPress={handleclick} style={styles.btn}><Text>Нажми</Text></TouchableOpacity>
           </View>
           <FlatList
-            data={contact}
+            data={tasks}
             keyExtractor={(item) => item.id}
             renderItem={({ item },) => (
               <View style={styles.container}>
-                <Text>{task}</Text>
+                <Text>{item.task}</Text>
               </View>
             )}></FlatList>
         </View>
