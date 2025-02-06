@@ -4,43 +4,45 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 //import TextInput from '@/components/input/Input';
-import { Alert, Button, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Button, FlatList, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { customAlphabet } from 'nanoid';
+import { customAlphabet } from 'nanoid/non-secure';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [clickbtn, setClickbtn] = useState("")
+  const [isEnabled, setIsEnabled] = useState(false);
   const [task, setTask] = useState("")
   const handleclick = () => {
-    // if(task.length > 0 && task.length <15)
-    // {
-    
-    //   Alert.alert(task)
-    // }
-    // else {
-      //   Alert.alert("Введите допустимое значение")
-      // }
-      setTasks([...tasks,{id: nanoid(), task: task, state: false }])
+    if (task.length > 0 && task.length < 15) {
+      setTasks([...tasks, { id: nanoid(), task: task, state: false }])
     }
-    
-    const nanoid = customAlphabet("adcdefghijklmnopqrstuvwxyz0123456789",10)
-    
-    const contact = [
-      {
-        task: "123",
-        id: nanoid(),
-        state: false
-      },
-      
-    ]
+    else {
+      Alert.alert("Введите допустимое значение")
+    }
+
+  }
+
+  const nanoid = customAlphabet("adcdefghijklmnopqrstuvwxyz0123456789", 10)
+
+  const contact = [
+    {
+      task: "123",
+      id: nanoid(),
+      state: false
+    },
+
+  ]
   const [tasks, setTasks] = useState([...contact])
+  const enbld = () =>{
+
+  }
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-
+  const toggleSwitch = (id: string) => setTasks(tasks.map((task) => task.id == id ? 'true' : 'false' ) )
 
   useEffect(() => {
     if (loaded) {
@@ -51,26 +53,30 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-
+  const handleDelete = (id: string) => {
+    setTasks(tasks.filter((task) => task.id !== id))
+  }
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      
 
-        <View style={styles.container2}>
-          <View style={styles.container}>
-          <TextInput value={task} onChangeText={setTask} placeholder='Напишите текст' style={styles.styleinput}>{task}</TextInput>
+
+      <View style={styles.container2}>
+        <View style={styles.container}>
+          <TextInput value={task} onChangeText={setTask} placeholder='Напишите текст' style={styles.styleinput} />
           <TouchableOpacity onPress={handleclick} style={styles.btn}><Text>Нажми</Text></TouchableOpacity>
-          </View>
-          <FlatList
-            data={tasks}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item },) => (
-              <View style={styles.container}>
-                <Text>{item.task}</Text>
-              </View>
-            )}></FlatList>
         </View>
-     
+        <FlatList
+          data={tasks}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item },) => (
+            <View style={styles.container}>
+              <Text>{item.task}</Text>
+              <TouchableOpacity style={styles.btn} onPress={() => handleDelete(item.id)}><Text>Delete</Text></TouchableOpacity>
+              <Switch value={isEnabled} onValueChange={() => {toggleSwitch(item.id)}}></Switch>
+            </View>
+          )}></FlatList>
+      </View>
+
 
     </ThemeProvider>
   );
@@ -91,6 +97,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   btn: {
+    marginLeft: 10,
     width: 50,
     height: 30,
     borderWidth: 1,
