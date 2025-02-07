@@ -14,15 +14,15 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [clickbtn, setClickbtn] = useState("")
   const [isEnabled, setIsEnabled] = useState(false);
-  const [task, setTask] = useState("")
+  const [newTaskName, setNewTaskName] = useState("")
   const handleclick = () => {
-    if (task.length > 0 && task.length < 15) {
-      setTasks([...tasks, { id: nanoid(), task: task, state: false }])
+    if (newTaskName.trim().length > 0 && newTaskName.trim().length < 15) {
+
+      setTasks([...tasks, { id: nanoid(), task: newTaskName.trim(), state: false }])
     }
     else {
       Alert.alert("Введите допустимое значение")
     }
-
   }
 
   const nanoid = customAlphabet("adcdefghijklmnopqrstuvwxyz0123456789", 10)
@@ -36,13 +36,23 @@ export default function RootLayout() {
 
   ]
   const [tasks, setTasks] = useState([...contact])
-  const enbld = () =>{
+  const enbld = () => {
 
   }
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-  const toggleSwitch = (id: string) => setTasks(tasks.map((task) => task.id == id ? 'true' : 'false' ) )
+  const toggleSwitch = (id: string) => {
+    const newTasks = []
+    for (let i of tasks) {
+      if (i.id === id) {
+        newTasks.push({ ...i, state: !i.state })
+      } else {
+        newTasks.push(i) 
+      }
+    }
+    setTasks(newTasks)
+  }
 
   useEffect(() => {
     if (loaded) {
@@ -62,7 +72,7 @@ export default function RootLayout() {
 
       <View style={styles.container2}>
         <View style={styles.container}>
-          <TextInput value={task} onChangeText={setTask} placeholder='Напишите текст' style={styles.styleinput} />
+          <TextInput value={newTaskName} onChangeText={setNewTaskName} placeholder='Напишите текст' style={styles.styleinput} />
           <TouchableOpacity onPress={handleclick} style={styles.btn}><Text>Нажми</Text></TouchableOpacity>
         </View>
         <FlatList
@@ -72,7 +82,7 @@ export default function RootLayout() {
             <View style={styles.container}>
               <Text>{item.task}</Text>
               <TouchableOpacity style={styles.btn} onPress={() => handleDelete(item.id)}><Text>Delete</Text></TouchableOpacity>
-              <Switch value={isEnabled} onValueChange={() => {toggleSwitch(item.id)}}></Switch>
+              <Switch value={item.state} onValueChange={() => { toggleSwitch(item.id) }}></Switch>
             </View>
           )}></FlatList>
       </View>
