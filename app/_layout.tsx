@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
+import { ITodo } from '@/entity/todo/todo.model';
 //import TextInput from '@/components/input/Input';
 import { Alert, Button, FlatList, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -12,9 +13,9 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [clickbtn, setClickbtn] = useState("")
-  const [isEnabled, setIsEnabled] = useState(false);
+  const [mainSwitch, setMainSwitch] = useState(false);
   const [newTaskName, setNewTaskName] = useState("")
+  const [filtertodo, setFilterTodo] = useState<ITodo[]>()
   const handleclick = () => {
     if (newTaskName.trim().length > 0 && newTaskName.trim().length < 15) {
       setNewTaskName('')
@@ -36,7 +37,10 @@ export default function RootLayout() {
 
   ]
   const [tasks, setTasks] = useState([...contact])
-  
+
+  useEffect(()=> {
+    setFilterTodo([...tasks])
+  },[])
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -46,7 +50,7 @@ export default function RootLayout() {
       if (i.id === id) {
         newTasks.push({ ...i, state: !i.state })
       } else {
-        newTasks.push(i) 
+        newTasks.push(i)
       }
     }
     setTasks(newTasks)
@@ -66,26 +70,24 @@ export default function RootLayout() {
   }
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-
-
       <View style={styles.container2}>
         <View style={styles.container}>
           <TextInput value={newTaskName} onChangeText={setNewTaskName} placeholder='Напишите текст' style={styles.styleinput} />
           <TouchableOpacity onPress={handleclick} style={styles.btn}><Text>Нажми</Text></TouchableOpacity>
         </View>
+        <Switch value={mainSwitch} onValueChange={setMainSwitch}></Switch>
         <FlatList
           data={tasks}
           keyExtractor={(item) => item.id}
           renderItem={({ item },) => (
             <View style={styles.container}>
+              
               <Text>{item.task}</Text>
               <TouchableOpacity style={styles.btn} onPress={() => handleDelete(item.id)}><Text>Delete</Text></TouchableOpacity>
               <Switch value={item.state} onValueChange={() => { toggleSwitch(item.id) }}></Switch>
             </View>
           )}></FlatList>
       </View>
-
-
     </ThemeProvider>
   );
 }
