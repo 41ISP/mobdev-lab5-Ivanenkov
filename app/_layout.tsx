@@ -17,7 +17,7 @@ export default function RootLayout() {
   const [newTaskName, setNewTaskName] = useState("")
   const handleclick = () => {
     if (newTaskName.trim().length > 0 && newTaskName.trim().length < 15) {
-
+      setNewTaskName('')
       setTasks([...tasks, { id: nanoid(), task: newTaskName.trim(), state: false }])
     }
     else {
@@ -36,9 +36,7 @@ export default function RootLayout() {
 
   ]
   const [tasks, setTasks] = useState([...contact])
-  const enbld = () => {
-
-  }
+  
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
