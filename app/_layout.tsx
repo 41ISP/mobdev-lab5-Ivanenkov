@@ -12,10 +12,21 @@ import { customAlphabet } from 'nanoid/non-secure';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const nanoid = customAlphabet("adcdefghijklmnopqrstuvwxyz0123456789", 10)
+  const contact = [
+    {
+      task: "123",
+      id: nanoid(),
+      state: false
+    },
+  ]
+
   const colorScheme = useColorScheme();
   const [mainSwitch, setMainSwitch] = useState(false);
   const [newTaskName, setNewTaskName] = useState("")
-  const [filtertodo, setFilterTodo] = useState<ITodo[]>()
+  const [tasks, setTasks] = useState([...contact])
+  const [filtertodo, setFilterTodo] = useState([...tasks])
+  
   const handleclick = () => {
     if (newTaskName.trim().length > 0 && newTaskName.trim().length < 15) {
       setNewTaskName('')
@@ -26,21 +37,16 @@ export default function RootLayout() {
     }
   }
 
-  const nanoid = customAlphabet("adcdefghijklmnopqrstuvwxyz0123456789", 10)
 
-  const contact = [
-    {
-      task: "123",
-      id: nanoid(),
-      state: false
-    },
 
-  ]
-  const [tasks, setTasks] = useState([...contact])
-
-  useEffect(()=> {
-    setFilterTodo([...tasks])
-  },[])
+  useEffect(() => {
+    if (mainSwitch) {
+      setFilterTodo(tasks.filter((task) => task.state !== mainSwitch))
+    }
+    else {
+      setFilterTodo([...tasks])
+    }
+  }, [mainSwitch, tasks])
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -77,11 +83,11 @@ export default function RootLayout() {
         </View>
         <Switch value={mainSwitch} onValueChange={setMainSwitch}></Switch>
         <FlatList
-          data={tasks}
+          data={filtertodo}
           keyExtractor={(item) => item.id}
           renderItem={({ item },) => (
             <View style={styles.container}>
-              
+
               <Text>{item.task}</Text>
               <TouchableOpacity style={styles.btn} onPress={() => handleDelete(item.id)}><Text>Delete</Text></TouchableOpacity>
               <Switch value={item.state} onValueChange={() => { toggleSwitch(item.id) }}></Switch>
