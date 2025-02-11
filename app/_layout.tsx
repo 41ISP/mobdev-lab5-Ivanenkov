@@ -3,7 +3,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
-import { ITodo } from '@/entity/todo/todo.model';
+import { ITodo, IStore, sklad } from '@/entity/todo/todo.model';
 //import TextInput from '@/components/input/Input';
 import { Alert, Button, FlatList, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
