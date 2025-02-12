@@ -11,8 +11,8 @@ export interface ITodo {
 export interface IStore {
     tasks: ITodo[],
     dobavlenie: (task: ITodo) => void,
-    udalenie: (id: ITodo) => void,
-    tooglesw: (id: ITodo) => void,
+    udalenie: (id: string) => void,
+    tooglesw: (id: string) => void,
 }
 
 export const sklad = create<IStore>()(
@@ -20,8 +20,8 @@ export const sklad = create<IStore>()(
         (set) => ({
             tasks:[],
             dobavlenie: (task) => set((state)=>({...state, tasks:[...state.tasks, task]})),
-            udalenie:(task)=> set((state)=> ({...state, tasks: state.tasks.filter((u)=> task.taskstate !== u.taskstate)})),
-            tooglesw: (task)=> set((state)=>({...state, tasks: state.tasks.map((t)=> t.id === task.id ? {...t, taskstate: !t.taskstate } : t)}))
+            udalenie:(id)=> set((state)=> ({...state, tasks: state.tasks.filter((u)=> u.id !== id)})),
+            tooglesw: (id)=> set((state)=>({...state, tasks: state.tasks.map((t)=> t.id === id ? {...t, taskstate: !t.taskstate } : t)}))
         }),
         {
             name: 'task-storage',

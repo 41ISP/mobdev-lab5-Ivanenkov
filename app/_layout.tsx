@@ -8,29 +8,22 @@ import { ITodo, IStore, sklad } from '@/entity/todo/todo.model';
 import { Alert, Button, FlatList, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { customAlphabet } from 'nanoid/non-secure';
+import { useStore } from 'zustand';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const nanoid = customAlphabet("adcdefghijklmnopqrstuvwxyz0123456789", 10)
-  const contact = [
-    {
-      task: "123",
-      id: nanoid(),
-      state: false
-    },
-  ]
-
+  const {dobavlenie, udalenie, tooglesw, tasks} = sklad()
   const colorScheme = useColorScheme();
   const [mainSwitch, setMainSwitch] = useState(false);
   const [newTaskName, setNewTaskName] = useState("")
-  const [tasks, setTasks] = useState([...contact])
   const [filtertodo, setFilterTodo] = useState([...tasks])
   
   const handleclick = () => {
     if (newTaskName.trim().length > 0 && newTaskName.trim().length < 15) {
       setNewTaskName('')
-      setTasks([...tasks, { id: nanoid(), task: newTaskName.trim(), state: false }])
+      dobavlenie({ id: nanoid(), task: newTaskName.trim(), taskstate: false })
     }
     else {
       Alert.alert("Введите допустимое значение")
@@ -41,7 +34,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (mainSwitch) {
-      setFilterTodo(tasks.filter((task) => task.state !== mainSwitch))
+      setFilterTodo(tasks.filter((task) => task.taskstate !== mainSwitch))
     }
     else {
       setFilterTodo([...tasks])
@@ -50,18 +43,7 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-  const toggleSwitch = (id: string) => {
-    const newTasks = []
-    for (let i of tasks) {
-      if (i.id === id) {
-        newTasks.push({ ...i, state: !i.state })
-      } else {
-        newTasks.push(i)
-      }
-    }
-    setTasks(newTasks)
-  }
-
+  
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
@@ -71,9 +53,7 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-  const handleDelete = (id: string) => {
-    setTasks(tasks.filter((task) => task.id !== id))
-  }
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <View style={styles.container2}>
@@ -89,8 +69,8 @@ export default function RootLayout() {
             <View style={styles.container}>
 
               <Text>{item.task}</Text>
-              <TouchableOpacity style={styles.btn} onPress={() => handleDelete(item.id)}><Text>Delete</Text></TouchableOpacity>
-              <Switch value={item.state} onValueChange={() => { toggleSwitch(item.id) }}></Switch>
+              <TouchableOpacity style={styles.btn} onPress={() => udalenie(item.id)}><Text>Delete</Text></TouchableOpacity>
+              <Switch value={item.taskstate} onValueChange={() => { tooglesw(item.id) }}></Switch>
             </View>
           )}></FlatList>
       </View>
@@ -115,9 +95,13 @@ const styles = StyleSheet.create({
   btn: {
     marginLeft: 10,
     width: 50,
+    borderRadius: 20,
     height: 30,
     borderWidth: 1,
-
+    backgroundColor: "#ff0000",
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: "white"
   },
   styleinput: {
     width: 140,
